@@ -15,7 +15,6 @@ public class WebSecurityConfiguration extends org.springframework.security.confi
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((requests) -> requests
-//                        .requestMatchers("/api/**").permitAll()
                         .anyRequest().permitAll()
                 )
                 .httpBasic(Customizer.withDefaults())
