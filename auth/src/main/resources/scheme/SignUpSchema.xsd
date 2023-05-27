@@ -16,6 +16,7 @@
 
     <xs:complexType name="AuthorizeResponseType">
         <xs:sequence>
+            <xs:element name="status" type="xs:int"/>
             <xs:element name="username" type="xs:string"/>
             <xs:element name="jwtToken" type="xs:string"/>
         </xs:sequence>

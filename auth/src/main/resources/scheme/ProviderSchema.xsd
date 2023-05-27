@@ -14,6 +14,7 @@
 
     <xs:complexType name="ProviderResponse">
         <xs:sequence>
+            <xs:element name="status" type="xs:int"/>
             <xs:element name="username" type="xs:string"/>
             <xs:element name="rub_balance" type="xs:decimal"/>
             <xs:element name="eur_balance" type="xs:decimal"/>

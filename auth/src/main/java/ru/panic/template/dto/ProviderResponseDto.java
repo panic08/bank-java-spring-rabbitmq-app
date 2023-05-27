@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class ProviderResponseDto {
+    private Integer status;
     private String username;
     private Number rub_balance;
     private Number usd_balance;

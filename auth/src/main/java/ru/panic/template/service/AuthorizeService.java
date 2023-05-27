@@ -13,6 +13,7 @@ import ru.panic.template.repository.AuthorizeSmsCodeVerifierHashRepository;
 import ru.panic.template.repository.UserRepository;
 import ru.panic.template.service.hash.AuthorizeSmsCodeVerifierHash;
 import ru.panic.util.CodeGeneratorUtil;
+import ru.panic.util.PhoneNumberValidatorUtil;
 
 @Service
 @Slf4j
@@ -36,6 +37,7 @@ public class AuthorizeService {
     private final AuthorizeSmsCodeVerifierHashRepository authorizeSmsCodeVerifierHashRepository;
 
     private CodeGeneratorUtil codeGeneratorUtil;
+    private PhoneNumberValidatorUtil phoneNumberValidatorUtil;
 
     public AuthorizeResponseDto signIn(SignInRequestDto request){
         log.info("Received signIn request for username {}", request.getUsername());
@@ -59,6 +61,7 @@ public class AuthorizeService {
         String generatedToken = jwtUtil.generateToken(user);
 
         AuthorizeResponseDto authorizeResponseDto = new AuthorizeResponseDto();
+        authorizeResponseDto.setStatus(200);
         authorizeResponseDto.setUsername(request.getUsername());
         authorizeResponseDto.setJwtToken(generatedToken);
 
@@ -73,6 +76,9 @@ public class AuthorizeService {
         if (isExists){
             throw new InvalidCredentialsException("Данный пользователь уже существует");
         }
+        if (!phoneNumberValidatorUtil.validate(request.getUsername())){
+            throw new InvalidCredentialsException("Неверный номер телефона");
+        }
 
         User user = new User();
         user.setUsername(request.getUsername());
@@ -86,6 +92,7 @@ public class AuthorizeService {
         userRepository.save(user);
 
         AuthorizeResponseDto authorizeResponseDto = new AuthorizeResponseDto();
+        authorizeResponseDto.setStatus(200);
         authorizeResponseDto.setUsername(request.getUsername());
         authorizeResponseDto.setJwtToken(jwtUtil.generateToken(user));
         return authorizeResponseDto;
@@ -95,6 +102,7 @@ public class AuthorizeService {
             User user = userRepository.findByUsername(jwtUtil.extractUsername(request.getJwtToken()));
 
             ProviderResponseDto providerResponseDto = new ProviderResponseDto();
+            providerResponseDto.setStatus(200);
             providerResponseDto.setUsername(user.getUsername());
             providerResponseDto.setRub_balance(user.getRub_balance());
             providerResponseDto.setEur_balance(user.getEur_balance());
