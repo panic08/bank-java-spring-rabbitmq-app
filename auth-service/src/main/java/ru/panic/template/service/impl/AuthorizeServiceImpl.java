@@ -1,4 +1,4 @@
-package ru.panic.template.service;
+package ru.panic.template.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -11,34 +11,32 @@ import ru.panic.template.exception.InvalidCredentialsException;
 import ru.panic.template.exception.TimeNotElapsedException;
 import ru.panic.template.repository.AuthorizeSmsCodeVerifierHashRepository;
 import ru.panic.template.repository.UserRepository;
+import ru.panic.template.service.AuthorizeService;
 import ru.panic.template.service.hash.AuthorizeSmsCodeVerifierHash;
 import ru.panic.util.CodeGeneratorUtil;
 import ru.panic.util.PhoneNumberValidatorUtil;
 
 @Service
 @Slf4j
-public class AuthorizeService {
-    public AuthorizeService(JwtUtil jwtUtil, UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, MessenteApi messenteApi, AuthorizeSmsCodeVerifierHashRepository authorizeSmsCodeVerifierHashRepository) {
+public class AuthorizeServiceImpl implements AuthorizeService {
+    public AuthorizeServiceImpl(JwtUtil jwtUtil, UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, MessenteApi messenteApi, AuthorizeSmsCodeVerifierHashRepository authorizeSmsCodeVerifierHashRepository, CodeGeneratorUtil codeGeneratorUtil, PhoneNumberValidatorUtil phoneNumberValidatorUtil) {
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.messenteApi = messenteApi;
         this.authorizeSmsCodeVerifierHashRepository = authorizeSmsCodeVerifierHashRepository;
+        this.codeGeneratorUtil = codeGeneratorUtil;
+        this.phoneNumberValidatorUtil = phoneNumberValidatorUtil;
     }
 
     private final JwtUtil jwtUtil;
-
     private final UserRepository userRepository;
-
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
     private final MessenteApi messenteApi;
-
     private final AuthorizeSmsCodeVerifierHashRepository authorizeSmsCodeVerifierHashRepository;
-
-    private CodeGeneratorUtil codeGeneratorUtil;
-    private PhoneNumberValidatorUtil phoneNumberValidatorUtil;
-
+    private final CodeGeneratorUtil codeGeneratorUtil;
+    private final PhoneNumberValidatorUtil phoneNumberValidatorUtil;
+    @Override
     public AuthorizeResponseDto signIn(SignInRequestDto request){
         log.info("Received signIn request for username {}", request.getUsername());
 
@@ -69,6 +67,7 @@ public class AuthorizeService {
 
         return authorizeResponseDto;
     }
+    @Override
     public AuthorizeResponseDto signUp(SignUpRequestDto request){
 
         boolean isExists = userRepository.existsUserByUsername(request.getUsername());
@@ -97,6 +96,7 @@ public class AuthorizeService {
         authorizeResponseDto.setJwtToken(jwtUtil.generateToken(user));
         return authorizeResponseDto;
     }
+    @Override
     public ProviderResponseDto getInfoByJwt(ProviderRequestDto request){
         if (jwtUtil.isJwtValid(request.getJwtToken()) && !jwtUtil.isTokenExpired(request.getJwtToken())){
             User user = userRepository.findByUsername(jwtUtil.extractUsername(request.getJwtToken()));
@@ -114,6 +114,7 @@ public class AuthorizeService {
             throw new InvalidCredentialsException("Некорректный JWT токен");
         }
     }
+    @Override
     public PreSignInResponseDto preSignIn(SignInRequestDto request){
         log.info("Received preSignIn request for username {}", request.getUsername());
 

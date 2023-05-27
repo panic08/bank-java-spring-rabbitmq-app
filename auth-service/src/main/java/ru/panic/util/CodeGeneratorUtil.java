@@ -1,7 +1,9 @@
 package ru.panic.util;
 
-import java.util.Random;
+import org.springframework.stereotype.Component;
 
+import java.util.Random;
+@Component
 public class CodeGeneratorUtil {
     public int generateRandomNumber() {
         Random random = new Random();
