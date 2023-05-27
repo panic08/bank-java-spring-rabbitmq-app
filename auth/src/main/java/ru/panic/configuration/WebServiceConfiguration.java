@@ -56,6 +56,16 @@ public class WebServiceConfiguration extends WsConfigurerAdapter {
         wsdl11Definition.setSchema(providerSchema);
         return wsdl11Definition;
     }
+    @Bean(name = "PreSignInEndpoint")
+    public DefaultWsdl11Definition preSignInEndpoint(XsdSchema preSignInSchema) {
+        DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
+        wsdl11Definition.setPortTypeName("8080");
+        wsdl11Definition.setLocationUri("/api/v1");
+        wsdl11Definition.setTargetNamespace("http://localhost/PreSignInEndpoint");
+        wsdl11Definition.setSchema(preSignInSchema);
+        return wsdl11Definition;
+    }
+
     @Bean
     public XsdSchema signInSchema() {
         return new SimpleXsdSchema(new ClassPathResource("scheme/SignInSchema.xsd"));
@@ -63,6 +73,10 @@ public class WebServiceConfiguration extends WsConfigurerAdapter {
     @Bean
     public XsdSchema signUpSchema() {
         return new SimpleXsdSchema(new ClassPathResource("scheme/SignUpSchema.xsd"));
+    }
+    @Bean
+    public XsdSchema preSignInSchema() {
+        return new SimpleXsdSchema(new ClassPathResource("scheme/PreSignInSchema.xsd"));
     }
     @Bean
     public XsdSchema providerSchema() {

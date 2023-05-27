@@ -3,8 +3,8 @@ package ru.panic.template.dto;
 import lombok.Data;
 
 @Data
-public class AuthorizeRequestDto {
+public class SignInRequestDto {
     private String username;
     private String password;
-    private String ipAddress;
+    private Integer code;
 }

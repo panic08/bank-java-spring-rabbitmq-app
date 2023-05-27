@@ -4,21 +4,25 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.panic.security.JwtUtil;
-import ru.panic.template.dto.AuthorizeRequestDto;
-import ru.panic.template.dto.AuthorizeResponseDto;
-import ru.panic.template.dto.ProviderRequestDto;
-import ru.panic.template.dto.ProviderResponseDto;
+import ru.panic.template.api.MessenteApi;
+import ru.panic.template.dto.*;
 import ru.panic.template.entity.User;
 import ru.panic.template.exception.InvalidCredentialsException;
+import ru.panic.template.exception.TimeNotElapsedException;
+import ru.panic.template.repository.AuthorizeSmsCodeVerifierHashRepository;
 import ru.panic.template.repository.UserRepository;
+import ru.panic.template.service.hash.AuthorizeSmsCodeVerifierHash;
+import ru.panic.util.CodeGeneratorUtil;
 
 @Service
 @Slf4j
 public class AuthorizeService {
-    public AuthorizeService(JwtUtil jwtUtil, UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public AuthorizeService(JwtUtil jwtUtil, UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, MessenteApi messenteApi, AuthorizeSmsCodeVerifierHashRepository authorizeSmsCodeVerifierHashRepository) {
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.messenteApi = messenteApi;
+        this.authorizeSmsCodeVerifierHashRepository = authorizeSmsCodeVerifierHashRepository;
     }
 
     private final JwtUtil jwtUtil;
@@ -27,11 +31,18 @@ public class AuthorizeService {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public AuthorizeResponseDto signIn(AuthorizeRequestDto request){
-        log.info("Received authorize request for username {}", request.getUsername());
+    private final MessenteApi messenteApi;
+
+    private final AuthorizeSmsCodeVerifierHashRepository authorizeSmsCodeVerifierHashRepository;
+
+    private CodeGeneratorUtil codeGeneratorUtil;
+
+    public AuthorizeResponseDto signIn(SignInRequestDto request){
+        log.info("Received signIn request for username {}", request.getUsername());
 
         User user = userRepository.findByUsername(request.getUsername());
         if (user == null){
+            log.warn("Invalid credentials for username {}", request.getUsername());
             throw new InvalidCredentialsException("Неверный логин или пароль");
         }
         if (!bCryptPasswordEncoder.matches(
@@ -39,7 +50,11 @@ public class AuthorizeService {
             log.warn("Invalid credentials for username {}", request.getUsername());
             throw new InvalidCredentialsException("Неверный логин или пароль");
         }
-
+        if (!authorizeSmsCodeVerifierHashRepository.findById(request.getUsername())
+                .orElseThrow().getCode().equals(request.getCode())){
+            log.warn("Invalid credentials for username {}", request.getUsername());
+            throw new InvalidCredentialsException("Неверный код");
+        }
 
         String generatedToken = jwtUtil.generateToken(user);
 
@@ -51,11 +66,14 @@ public class AuthorizeService {
 
         return authorizeResponseDto;
     }
-    public AuthorizeResponseDto signUp(AuthorizeRequestDto request){
+    public AuthorizeResponseDto signUp(SignUpRequestDto request){
+
         boolean isExists = userRepository.existsUserByUsername(request.getUsername());
+        log.info("Received signUp request for username {}", request.getUsername());
         if (isExists){
             throw new InvalidCredentialsException("Данный пользователь уже существует");
         }
+
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(bCryptPasswordEncoder.encode(request.getPassword()));
@@ -87,5 +105,64 @@ public class AuthorizeService {
         }else{
             throw new InvalidCredentialsException("Некорректный JWT токен");
         }
+    }
+    public PreSignInResponseDto preSignIn(SignInRequestDto request){
+        log.info("Received preSignIn request for username {}", request.getUsername());
+
+        User user = userRepository.findByUsername(request.getUsername());
+        if (user == null){
+            throw new InvalidCredentialsException("Неверный логин или пароль");
+        }
+        if (!bCryptPasswordEncoder.matches(
+                request.getPassword(), user.getPassword())) {
+            log.warn("Invalid credentials for username {}", request.getUsername());
+            throw new InvalidCredentialsException("Неверный логин или пароль");
+        }
+        AuthorizeSmsCodeVerifierHash authorizeSmsCodeVerifierHash = new AuthorizeSmsCodeVerifierHash();
+        authorizeSmsCodeVerifierHash.setUsername(request.getUsername());
+        authorizeSmsCodeVerifierHash.setCode(codeGeneratorUtil.generateRandomNumber());
+        authorizeSmsCodeVerifierHash.setLevel(0);
+        authorizeSmsCodeVerifierHash.setTimestamp(System.currentTimeMillis());
+
+        AuthorizeSmsCodeVerifierHash authorizeSmsCodeVerifierHash1 = authorizeSmsCodeVerifierHashRepository.findById(request.getUsername()).orElse(null);
+
+        if (authorizeSmsCodeVerifierHash1 != null){
+            log.warn("AuthorizeSmsCode object was founded {}", authorizeSmsCodeVerifierHash1.getUsername());
+            authorizeSmsCodeVerifierHash.setLevel(authorizeSmsCodeVerifierHash1.getLevel()+1);
+            authorizeSmsCodeVerifierHashRepository.deleteById(request.getUsername());
+        }
+
+        long timeLeft = System.currentTimeMillis() - authorizeSmsCodeVerifierHash.getTimestamp();
+        switch (authorizeSmsCodeVerifierHash.getLevel()){
+            case 1 -> {
+                if (timeLeft <= 90000){
+                    throw new TimeNotElapsedException(
+                            "Подождите, до повторной отправки уведомления осталось: " +
+                            timeLeft);
+                }
+            }
+            case 2 -> {
+                if (timeLeft <= 180000){
+                    throw new TimeNotElapsedException(
+                            "Подождите, до повторной отправки уведомления осталось: " +
+                                    timeLeft);
+                }
+            }
+            case 3 -> {
+                if (timeLeft <= 360000){
+                    throw new TimeNotElapsedException(
+                            "Подождите, до повторной отправки уведомления осталось: " +
+                                    timeLeft);
+                }
+            }
+        }
+
+        authorizeSmsCodeVerifierHashRepository.save(authorizeSmsCodeVerifierHash);
+
+        messenteApi.sendSms(request.getUsername(), "Ваш смс код для подтверждения авторизации: " + authorizeSmsCodeVerifierHash.getCode());
+        PreSignInResponseDto preSignInResponseDto = new PreSignInResponseDto();
+        preSignInResponseDto.setStatus(200);
+        preSignInResponseDto.setUsername(request.getUsername());
+        return preSignInResponseDto;
     }
 }
