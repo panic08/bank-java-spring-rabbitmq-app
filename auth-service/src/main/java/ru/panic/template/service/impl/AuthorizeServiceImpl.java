@@ -8,6 +8,7 @@ import ru.panic.template.api.MessenteApi;
 import ru.panic.template.dto.*;
 import ru.panic.template.entity.User;
 import ru.panic.template.exception.InvalidCredentialsException;
+import ru.panic.template.exception.InvalidJwtException;
 import ru.panic.template.exception.TimeNotElapsedException;
 import ru.panic.template.repository.AuthorizeSmsCodeVerifierHashRepository;
 import ru.panic.template.repository.UserRepository;
@@ -111,7 +112,7 @@ public class AuthorizeServiceImpl implements AuthorizeService {
 
             return providerResponseDto;
         }else{
-            throw new InvalidCredentialsException("Некорректный JWT токен");
+            throw new InvalidJwtException("Некорректный JWT токен");
         }
     }
     @Override
