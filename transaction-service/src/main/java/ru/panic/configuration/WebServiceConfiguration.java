@@ -33,18 +33,18 @@ public class WebServiceConfiguration extends WsConfigurerAdapter {
         return new ServletRegistrationBean<>(servlet, "/api/v1/*");
     }
 
-    @Bean(name = "SignInEndpoint")
+    @Bean(name = "P2PTransactionEndpoint")
     public DefaultWsdl11Definition signInEndpoint(XsdSchema signInSchema) {
         DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
         wsdl11Definition.setPortTypeName("8081");
         wsdl11Definition.setLocationUri("/api/v1");
-        wsdl11Definition.setTargetNamespace("http://localhost/ProviderEndpoint");
+        wsdl11Definition.setTargetNamespace("http://localhost/P2PTransactionEndpoint");
         wsdl11Definition.setSchema(signInSchema);
         return wsdl11Definition;
     }
     @Bean
     public XsdSchema signInSchema() {
-        return new SimpleXsdSchema(new ClassPathResource("scheme/ProviderSchema.xsd"));
+        return new SimpleXsdSchema(new ClassPathResource("scheme/P2PTransactionSchema.xsd"));
     }
 
     @Override

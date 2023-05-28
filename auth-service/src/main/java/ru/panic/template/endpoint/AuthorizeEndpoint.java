@@ -38,12 +38,16 @@ public class AuthorizeEndpoint {
         log.info("Received request for method: signUp");
         return new JAXBElement<>(new QName(SIGN_IN_NAMESPACE_URI, "SignUpResponse"), AuthorizeResponseDto.class, authorizeServiceImpl.signUp(request.getValue()));
     }
-    @PayloadRoot(namespace = PROVIDER_NAMESPACE_URI, localPart = "ProviderRequest")
-    @ResponsePayload
-    private JAXBElement<ProviderResponseDto> getInfoByJwt(@RequestPayload JAXBElement<ProviderRequestDto> request) {
-        log.info("Received request for method: getInfoByJwt");
-        return new JAXBElement<>(new QName(PROVIDER_NAMESPACE_URI, "ProviderResponse"), ProviderResponseDto.class, authorizeServiceImpl.getInfoByJwt(request.getValue()));
-    }
+    /*
+    Dear caretakers, unfortunately I could not configure WebServiceTemplate, so we have ProviderController...
+     */
+
+//    @PayloadRoot(namespace = PROVIDER_NAMESPACE_URI, localPart = "ProviderRequest")
+//    @ResponsePayload
+//    private JAXBElement<ProviderResponseDto> getInfoByJwt(@RequestPayload JAXBElement<ProviderRequestDto> request) {
+//        log.info("Received request for method: getInfoByJwt");
+//        return new JAXBElement<>(new QName(PROVIDER_NAMESPACE_URI, "ProviderResponse"), ProviderResponseDto.class, authorizeServiceImpl.getInfoByJwt(request.getValue()));
+//    }
     @PayloadRoot(namespace = PRE_SIGN_IN_NAMESPACE_URI, localPart = "PreSignInRequest")
     @ResponsePayload
     private JAXBElement<PreSignInResponseDto> preSignIn(@RequestPayload JAXBElement<SignInRequestDto> request){

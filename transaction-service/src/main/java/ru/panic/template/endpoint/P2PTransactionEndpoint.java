@@ -7,17 +7,18 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
-import ru.panic.template.dto.ProviderRequestDto;
+import ru.panic.template.dto.P2PTransactionRequest;
+import ru.panic.template.dto.P2PTransactionResponse;
 @Endpoint
 @RestController
 @Slf4j
-public class TestEndpoint {
-    private static final String PROVIDER_NAMESPACE_URI = "http://localhost/ProviderEndpoint";
+public class P2PTransactionEndpoint {
+    private static final String P2P_TRANSACTION_NAMESPACE_URI = "http://localhost/P2PTransactionEndpoint";
 
-    @PayloadRoot(namespace = PROVIDER_NAMESPACE_URI, localPart = "ProviderRequest")
+    @PayloadRoot(namespace = P2P_TRANSACTION_NAMESPACE_URI, localPart = "P2PTransactionRequest")
     @ResponsePayload
-    private JAXBElement<ProviderRequestDto> helloRequest(@RequestPayload JAXBElement<ProviderRequestDto> request){
+    private JAXBElement<P2PTransactionResponse> helloRequest(@RequestPayload JAXBElement<P2PTransactionRequest> request){
 
-        return request;
+        return null;
     }
 }
