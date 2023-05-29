@@ -95,7 +95,7 @@ public class P2PTransactionServiceImpl implements P2PTransactionService {
 
         P2PTransactionResponse p2PTransactionResponse = new P2PTransactionResponse();
         p2PTransactionResponse.setStatus(200);
-        p2PTransactionResponse.setFrom(request.getFrom());
+        p2PTransactionResponse.setFrom(hash.getUsername());
         p2PTransactionResponse.setTo(request.getTo());
         p2PTransactionResponse.setDesc(request.getDesc());
         p2PTransactionResponse.setCurrency(request.getCurrency());
