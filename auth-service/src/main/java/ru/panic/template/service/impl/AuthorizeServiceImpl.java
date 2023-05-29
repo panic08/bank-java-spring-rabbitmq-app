@@ -54,7 +54,7 @@ public class AuthorizeServiceImpl implements AuthorizeService {
         if (!authorizeSmsCodeVerifierHashRepository.findById(request.getUsername())
                 .orElseThrow().getCode().equals(request.getCode())){
             log.warn("Invalid credentials for username {}", request.getUsername());
-            throw new InvalidCredentialsException("Неверный код");
+            throw new InvalidCredentialsException("Неверный смс код");
         }
 
         String generatedToken = jwtUtil.generateToken(user);

@@ -15,12 +15,12 @@
 
     <xs:complexType name="P2PTransactionRequestType">
         <xs:sequence>
+            <xs:element name="orderId" type="xs:string"/>
             <xs:element name="from" type="xs:string"/>
             <xs:element name="to" type="xs:string"/>
             <xs:element name="currency" type="Currency"/>
             <xs:element name="amount" type="xs:decimal"/>
             <xs:element name="desc" type="xs:string"/>
-            <xs:element name="timestamp" type="xs:long"/>
             <xs:element name="code" type="xs:int"/>
             <xs:element name="sign" type="xs:string"/>
         </xs:sequence>
@@ -28,6 +28,7 @@
     <xs:complexType name="P2PTransactionResponse">
         <xs:sequence>
             <xs:element name="status" type="xs:int"/>
+            <xs:element name="orderId" type="xs:string"/>
             <xs:element name="from" type="xs:string"/>
             <xs:element name="to" type="xs:string"/>
             <xs:element name="currency" type="Currency"/>

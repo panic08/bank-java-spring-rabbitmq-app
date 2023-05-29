@@ -19,7 +19,7 @@ public class EldestSmsCodeRemoverScheduler {
     private final AuthorizeSmsCodeVerifierHashRepository authorizeSmsCodeVerifierHashRepository;
     @Scheduled(fixedRate = 600000)
     public void eldestCodeRemover(){
-        log.info("Deletion of codes begins");
+        log.info("Deletion of auth-sms-codes-hash begins");
         List<AuthorizeSmsCodeVerifierHash> authorizeSmsCodeVerifierHashList =
                 (List<AuthorizeSmsCodeVerifierHash>) authorizeSmsCodeVerifierHashRepository.findAll();
         for (AuthorizeSmsCodeVerifierHash key : authorizeSmsCodeVerifierHashList){
