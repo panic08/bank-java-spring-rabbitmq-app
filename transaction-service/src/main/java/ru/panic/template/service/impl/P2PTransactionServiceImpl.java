@@ -14,11 +14,7 @@ import ru.panic.template.dto.ProviderResponseDto;
 import ru.panic.template.exception.InvalidCredentialsException;
 import ru.panic.template.repository.P2PTransactionSmsCodeVerifierHashRepository;
 import ru.panic.template.service.P2PTransactionService;
-import ru.panic.template.service.hash.P2PTransactionSmsCodeVerifierHash;
 import ru.panic.util.MD5Encryption;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -40,17 +36,17 @@ public class P2PTransactionServiceImpl implements P2PTransactionService {
     @Override
     @Transactional
     public P2PTransactionResponse getTransaction(P2PTransactionRequest request) {
-        List<P2PTransactionSmsCodeVerifierHash> list =
-                (List<P2PTransactionSmsCodeVerifierHash>) transactionSmsCodeVerifierHashRepository.findAllById(Collections.singletonList(request.getFrom()));
-        P2PTransactionSmsCodeVerifierHash hash = list.stream()
-                .filter(p -> p.getOrderId().equals(request.getOrderId()))
-                .toList()
-                .get(0);
-
-        if (!hash.getCode().equals(request.getCode())){
-            throw new InvalidCredentialsException("Неверный смс код");
-        }
-
+//        List<P2PTransactionSmsCodeVerifierHash> list =
+//                (List<P2PTransactionSmsCodeVerifierHash>) transactionSmsCodeVerifierHashRepository.findAllById(Collections.singletonList(request.getFrom()));
+//        P2PTransactionSmsCodeVerifierHash hash = list.stream()
+//                .filter(p -> p.getOrderId().equals(request.getOrderId()))
+//                .toList()
+//                .get(0);
+//
+//        if (!hash.getCode().equals(request.getCode())){
+//            throw new InvalidCredentialsException("Неверный смс код");
+//        }
+        log.info("Starting method: getTransaction with request: {}", request.getOrderId());
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonRequest = null;
 
@@ -61,27 +57,27 @@ public class P2PTransactionServiceImpl implements P2PTransactionService {
         }
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setContentType(new MediaType(MediaType.APPLICATION_JSON));
         HttpEntity<String> requestEntity = new HttpEntity<>(jsonRequest, headers);
-        ResponseEntity<ProviderResponseDto> response = restTemplate.exchange(URL, HttpMethod.GET, requestEntity, ProviderResponseDto.class);
+        ResponseEntity<ProviderResponseDto> response = restTemplate.exchange(URL, HttpMethod.POST, requestEntity, ProviderResponseDto.class);
 
-        switch (request.getCurrency()){
-            case RUB -> {
-                if (response.getBody().getRub_balance().doubleValue() < request.getAmount().doubleValue()){
-                    throw new InvalidCredentialsException("Не хватает средств на балансе");
-                }
-            }
-            case EUR -> {
-                if (response.getBody().getEur_balance().doubleValue() < request.getAmount().doubleValue()){
-                    throw new InvalidCredentialsException("Не хватает средств на балансе");
-                }
-            }
-            case USD -> {
-                if (response.getBody().getUsd_balance().doubleValue() < request.getAmount().doubleValue()){
-                    throw new InvalidCredentialsException("Не хватает средств на балансе");
-                }
-            }
-        }
+//        switch (request.getCurrency()){
+//            case RUB -> {
+//                if (response.getBody().getRub_balance().doubleValue() < request.getAmount().doubleValue()){
+//                    throw new InvalidCredentialsException("Не хватает средств на балансе");
+//                }
+//            }
+//            case EUR -> {
+//                if (response.getBody().getEur_balance().doubleValue() < request.getAmount().doubleValue()){
+//                    throw new InvalidCredentialsException("Не хватает средств на балансе");
+//                }
+//            }
+//            case USD -> {
+//                if (response.getBody().getUsd_balance().doubleValue() < request.getAmount().doubleValue()){
+//                    throw new InvalidCredentialsException("Не хватает средств на балансе");
+//                }
+//            }
+//        }
 
         String signatureString = md5Encryption.encrypt(
                         request.getFrom() +
@@ -89,17 +85,28 @@ public class P2PTransactionServiceImpl implements P2PTransactionService {
                         request.getAmount() +
                         request.getCurrency() +
                         request.getDesc());
+        System.out.println(signatureString);
         if(!signatureString.equals(request.getSign())){
             throw new InvalidCredentialsException("Неверный ключ подписи");
         }
 
         P2PTransactionResponse p2PTransactionResponse = new P2PTransactionResponse();
         p2PTransactionResponse.setStatus(200);
-        p2PTransactionResponse.setFrom(hash.getUsername());
+        p2PTransactionResponse.setFrom(response.getBody().getUsername());
+        p2PTransactionResponse.setAmount(request.getAmount());
         p2PTransactionResponse.setTo(request.getTo());
         p2PTransactionResponse.setDesc(request.getDesc());
         p2PTransactionResponse.setCurrency(request.getCurrency());
         p2PTransactionResponse.setTimestamp(System.currentTimeMillis());
+        String signatureString1 = md5Encryption.encrypt(
+                p2PTransactionResponse.getFrom() +
+                        p2PTransactionResponse.getTo() +
+                        p2PTransactionResponse.getAmount() +
+                        p2PTransactionResponse.getCurrency() +
+                        p2PTransactionResponse.getDesc() +
+                        p2PTransactionResponse.getTimestamp()
+
+        );
         p2PTransactionResponse.setSign(request.getSign());
 
         String jsonRequest1 = null;
@@ -108,6 +115,7 @@ public class P2PTransactionServiceImpl implements P2PTransactionService {
         } catch (Exception e) {
             log.warn("Bad jsonRequest: {}", p2PTransactionResponse);
         }
+
 
         rabbitTemplate.convertAndSend("p2p-transaction-queue", jsonRequest1);
         return p2PTransactionResponse;

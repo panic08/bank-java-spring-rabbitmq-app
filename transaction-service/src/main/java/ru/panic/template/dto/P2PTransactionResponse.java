@@ -9,7 +9,7 @@ public class P2PTransactionResponse {
     private String from;
     private String to;
     private Currency currency;
-    private Number amount;
+    private Double amount;
     private String desc;
     private Long timestamp;
     private String sign;

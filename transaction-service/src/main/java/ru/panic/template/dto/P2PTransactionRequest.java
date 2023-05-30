@@ -9,7 +9,7 @@ public class P2PTransactionRequest {
     private String from;
     private String to;
     private Currency currency;
-    private Number amount;
+    private Double amount;
     private String desc;
     private Integer code;
     private String sign;
