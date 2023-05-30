@@ -83,9 +83,10 @@ public class AuthorizeServiceImpl implements AuthorizeService {
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(bCryptPasswordEncoder.encode(request.getPassword()));
-        user.setRub_balance(0);
-        user.setEur_balance(0);
-        user.setUsd_balance(0);
+        user.setRub_balance(0D);
+        user.setEur_balance(0D);
+        user.setUsd_balance(0D);
+        user.setSecure3D(true);
         user.setTimestamp(System.currentTimeMillis());
         user.setIpAddress(request.getIpAddress());
         user.setIsNonLocked(false);
@@ -108,6 +109,7 @@ public class AuthorizeServiceImpl implements AuthorizeService {
             providerResponseDto.setRub_balance(user.getRub_balance());
             providerResponseDto.setEur_balance(user.getEur_balance());
             providerResponseDto.setUsd_balance(user.getUsd_balance());
+            providerResponseDto.setSecure3D(user.getSecure3D());
             providerResponseDto.setJwtToken(request.getJwtToken());
 
             return providerResponseDto;

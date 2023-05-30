@@ -34,17 +34,31 @@ public class WebServiceConfiguration extends WsConfigurerAdapter {
     }
 
     @Bean(name = "P2PTransactionEndpoint")
-    public DefaultWsdl11Definition signInEndpoint(XsdSchema signInSchema) {
+    public DefaultWsdl11Definition p2pTransaction(XsdSchema p2pTransactionSchema) {
         DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
         wsdl11Definition.setPortTypeName("8081");
         wsdl11Definition.setLocationUri("/api/v1");
         wsdl11Definition.setTargetNamespace("http://localhost/P2PTransactionEndpoint");
-        wsdl11Definition.setSchema(signInSchema);
+        wsdl11Definition.setSchema(p2pTransactionSchema);
         return wsdl11Definition;
     }
+    @Bean(name = "P2PPreTransactionEndpoint")
+    public DefaultWsdl11Definition p2pPreTransaction(XsdSchema p2pPreTransactionSchema) {
+        DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
+        wsdl11Definition.setPortTypeName("8081");
+        wsdl11Definition.setLocationUri("/api/v1");
+        wsdl11Definition.setTargetNamespace("http://localhost/P2PPreTransactionEndpoint");
+        wsdl11Definition.setSchema(p2pPreTransactionSchema);
+        return wsdl11Definition;
+    }
+
     @Bean
-    public XsdSchema signInSchema() {
+    public XsdSchema p2pTransactionSchema() {
         return new SimpleXsdSchema(new ClassPathResource("scheme/P2PTransactionSchema.xsd"));
+    }
+    @Bean
+    public XsdSchema p2pPreTransactionSchema() {
+        return new SimpleXsdSchema(new ClassPathResource("scheme/P2PPreTransactionSchema.xsd"));
     }
 
     @Override

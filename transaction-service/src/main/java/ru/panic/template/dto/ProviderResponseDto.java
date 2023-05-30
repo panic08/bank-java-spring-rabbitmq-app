@@ -9,5 +9,6 @@ public class ProviderResponseDto {
     private Number rub_balance;
     private Number usd_balance;
     private Number eur_balance;
+    private Boolean secure3D;
     private String jwtToken;
 }
