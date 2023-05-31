@@ -9,6 +9,8 @@
         <option value="$PROJECT_DIR$/transaction-service/pom.xml" />
         <option value="$PROJECT_DIR$/auth-service/pom.xml" />
         <option value="$PROJECT_DIR$/management-service/pom.xml" />
+        <option value="$PROJECT_DIR$/transaction-management-service/pom.xml" />
+        <option value="$PROJECT_DIR$/p2p-transaction-service/pom.xml" />
       </list>
     </option>
   </component>

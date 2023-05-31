@@ -4,6 +4,10 @@
     <file url="file://$PROJECT_DIR$/auth-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/auth-service/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/management-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/p2p-transaction-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/p2p-transaction-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/transaction-management-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/transaction-management-service/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/transaction-service/src/main/java" charset="UTF-8" />
   </component>
 </project>

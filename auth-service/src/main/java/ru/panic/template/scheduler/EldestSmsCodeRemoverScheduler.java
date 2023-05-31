@@ -20,13 +20,13 @@ public class EldestSmsCodeRemoverScheduler {
     @Scheduled(fixedRate = 600000)
     public void eldestCodeRemover(){
         log.info("Deletion of auth-sms-codes-hash begins");
-        List<AuthorizeSmsCodeVerifierHash> authorizeSmsCodeVerifierHashList =
+        List<AuthorizeSmsCodeVerifierHash> list =
                 (List<AuthorizeSmsCodeVerifierHash>) authorizeSmsCodeVerifierHashRepository.findAll();
-        for (AuthorizeSmsCodeVerifierHash key : authorizeSmsCodeVerifierHashList){
-            if (System.currentTimeMillis() - key.getTimestamp() >= 600000){
+        list.forEach(h -> {
+            if (System.currentTimeMillis() - h.getTimestamp() >= 600000){
                 log.warn("Founded sms code verifier with timestamp >= 10 min");
-                authorizeSmsCodeVerifierHashRepository.deleteById(key.getUsername());
+                authorizeSmsCodeVerifierHashRepository.deleteById(h.getUsername());
             }
-        }
+        });
     }
 }
