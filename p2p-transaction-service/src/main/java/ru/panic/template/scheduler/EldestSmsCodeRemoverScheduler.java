@@ -23,7 +23,7 @@ public class EldestSmsCodeRemoverScheduler {
         list.forEach(h -> {
             if (System.currentTimeMillis() - h.getTimestamp() >= 600000){
                 log.warn("Founded sms code verifier with timestamp >= 10 min");
-                repository.deleteById(h.getUsername());
+                repository.delete(h);
             }
         });
     }
