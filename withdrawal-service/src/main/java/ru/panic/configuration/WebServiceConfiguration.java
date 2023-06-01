@@ -14,7 +14,6 @@ import org.springframework.ws.transport.http.MessageDispatcherServlet;
 import org.springframework.ws.wsdl.wsdl11.DefaultWsdl11Definition;
 import org.springframework.xml.xsd.SimpleXsdSchema;
 import org.springframework.xml.xsd.XsdSchema;
-
 import java.util.List;
 
 @Configuration
@@ -28,22 +27,33 @@ public class WebServiceConfiguration extends WsConfigurerAdapter {
         return new ServletRegistrationBean<>(servlet, "/api/v1/*");
     }
 
-    @Bean(name = "SignInEndpoint")
-    public DefaultWsdl11Definition signInEndpoint(XsdSchema signInSchema) {
+    @Bean(name = "WithdrawalEndpoint")
+    public DefaultWsdl11Definition withdrawalEndpoint(XsdSchema withdrawalSchema) {
         DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
-        wsdl11Definition.setPortTypeName("8080");
+        wsdl11Definition.setPortTypeName("8084");
         wsdl11Definition.setLocationUri("/api/v1");
-        wsdl11Definition.setTargetNamespace("http://localhost/SignInEndpoint");
-        wsdl11Definition.setSchema(signInSchema);
+        wsdl11Definition.setTargetNamespace("http://localhost/WithdrawalEndpoint");
+        wsdl11Definition.setSchema(withdrawalSchema);
+        return wsdl11Definition;
+    }
+    @Bean(name = "PreWithdrawalEndpoint")
+    public DefaultWsdl11Definition preWithdrawalEndpoint(XsdSchema preWithdrawalSchema) {
+        DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
+        wsdl11Definition.setPortTypeName("8084");
+        wsdl11Definition.setLocationUri("/api/v1");
+        wsdl11Definition.setTargetNamespace("http://localhost/PreWithdrawalEndpoint");
+        wsdl11Definition.setSchema(preWithdrawalSchema);
         return wsdl11Definition;
     }
 
     @Bean
-    public XsdSchema signInSchema() {
-        return new SimpleXsdSchema(new ClassPathResource("scheme/SignInSchema.xsd"));
+    public XsdSchema withdrawalSchema() {
+        return new SimpleXsdSchema(new ClassPathResource("scheme/WithdrawalSchema.xsd"));
     }
-
-
+    @Bean
+    public XsdSchema preWithdrawalSchema() {
+        return new SimpleXsdSchema(new ClassPathResource("scheme/PreWithdrawalSchema.xsd"));
+    }
 
     @Override
     public void addInterceptors(List<EndpointInterceptor> interceptors) {

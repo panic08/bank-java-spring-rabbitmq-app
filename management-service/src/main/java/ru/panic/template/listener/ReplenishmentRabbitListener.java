@@ -19,6 +19,7 @@ public class ReplenishmentRabbitListener {
     private final ReplenishmentServiceImpl replenishmentService;
     @RabbitHandler
     private void replenishmentReceive(String request){
+        log.info("Receive message from Rabbitmq on {}", ReplenishmentRabbitListener.class);
         ObjectMapper objectMapper = new ObjectMapper();
         ReplenishmentRequestDto replenishmentRequestDto = new ReplenishmentRequestDto();
         try {

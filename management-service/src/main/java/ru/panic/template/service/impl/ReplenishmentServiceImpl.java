@@ -24,7 +24,7 @@ public class ReplenishmentServiceImpl implements ReplenishmentService {
     @Transactional
     public void handleReplenishment(ReplenishmentRequestDto request) {
         log.info("Handling replenishment: {}", ReplenishmentRequestDto.class);
-        if (request.getStatus() != 200){
+        if (!request.getStatus().equals(200)){
             return;
         }
         User user = userRepository.findByUsername(request.getUsername());

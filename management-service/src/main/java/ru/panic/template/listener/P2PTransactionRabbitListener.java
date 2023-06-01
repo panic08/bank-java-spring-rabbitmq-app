@@ -20,6 +20,7 @@ public class P2PTransactionRabbitListener {
     private final P2PTransactionServiceImpl p2PTransactionService;
     @RabbitHandler
     public void p2pTransactionReceive(String request){
+        log.info("Receive message from Rabbitmq on {}", P2PTransactionRabbitListener.class);
         ObjectMapper objectMapper = new ObjectMapper();
         P2PTransactionRequest p2PTransactionRequest = null;
         try {

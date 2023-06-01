@@ -1,0 +1,16 @@
+package ru.panic.template.dto;
+
+import lombok.Data;
+import ru.panic.template.dto.enums.Currency;
+import ru.panic.template.dto.enums.Method;
+
+@Data
+public class WithdrawalRequestDto {
+    private String from;
+    private String to;
+    private Currency currency;
+    private Method method;
+    private Double amount;
+    private String sign;
+
+}

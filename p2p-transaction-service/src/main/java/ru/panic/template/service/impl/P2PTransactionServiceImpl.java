@@ -47,6 +47,23 @@ public class P2PTransactionServiceImpl implements P2PTransactionService {
     private static final String URL = "http://localhost:8080/api/v2/getInfoByJwt";
     @Override
     public P2PTransactionResponse handleTransaction(P2PTransactionRequest request) {
+        switch (request.getCurrency()){
+            case RUB -> {
+                if(request.getAmount()<10){
+                    throw new InvalidCredentialsException("Минимальная сумма для отправки - 10 Р");
+                }
+            }
+            case USD -> {
+                if(request.getAmount()<0.10){
+                    throw new InvalidCredentialsException("Минимальная сумма для отправки - 0.10 $");
+                }
+            }
+            case EUR -> {
+                if(request.getAmount()<0.10){
+                    throw new InvalidCredentialsException("Минимальная сумма для отправки - 0.10 \t€");
+                }
+            }
+        }
 
         log.info("Starting method: getTransaction with request: {}", P2PTransactionRequest.class);
         ObjectMapper objectMapper = new ObjectMapper();
@@ -57,6 +74,7 @@ public class P2PTransactionServiceImpl implements P2PTransactionService {
         } catch (Exception e) {
             log.warn("Bad jsonRequest: {}", request.getFrom());
         }
+
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(new MediaType(MediaType.APPLICATION_JSON));
@@ -88,10 +106,13 @@ public class P2PTransactionServiceImpl implements P2PTransactionService {
                         request.getAmount() +
                         request.getCurrency() +
                         request.getDesc());
-        System.out.println(signatureString);
         if(!signatureString.equals(request.getSign())){
             throw new InvalidCredentialsException("Неверный ключ подписи");
         }
+
+        //We calculate the commission 3%
+        request.setAmount(request.getAmount()-(request.getAmount()*0.03));
+
         //Нам не нужно проверять на существующие смс, клинер все зачистит
         if(response.getBody().getSecure3D()){
             P2PTransactionSmsCodeVerifierHash hash = new P2PTransactionSmsCodeVerifierHash();
