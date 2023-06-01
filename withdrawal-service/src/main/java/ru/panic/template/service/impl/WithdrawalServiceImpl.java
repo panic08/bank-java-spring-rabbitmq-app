@@ -43,6 +43,24 @@ public class WithdrawalServiceImpl implements WithdrawalService {
     private static final String URL = "http://localhost:8080/api/v2/getInfoByJwt";
     @Override
     public WithdrawalResponseDto handleWithdrawal(WithdrawalRequestDto request) {
+        switch (request.getCurrency()){
+            case RUB -> {
+                if(request.getAmount()<10){
+                    throw new InvalidCredentialsException("Минимальная сумма для отправки - 10 Р");
+                }
+            }
+            case USD -> {
+                if(request.getAmount()<0.10){
+                    throw new InvalidCredentialsException("Минимальная сумма для отправки - 0.10 $");
+                }
+            }
+            case EUR -> {
+                if(request.getAmount()<0.10){
+                    throw new InvalidCredentialsException("Минимальная сумма для отправки - 0.10 \t€");
+                }
+            }
+        }
+
         ObjectMapper objectMapper = new ObjectMapper();
         log.info("Starting method: getTransaction with request: {}", WithdrawalRequestDto.class);
         String jsonRequest = null;
