@@ -8,7 +8,6 @@ import ru.panic.template.service.impl.AuthorizeServiceImpl;
 
 @RestController
 @RequestMapping("/api/v2")
-@CrossOrigin(origins = "*")
 @Slf4j
 public class ProviderController {
     public ProviderController(AuthorizeServiceImpl authorizeServiceImpl) {

@@ -10,8 +10,6 @@ import ru.panic.template.repository.P2PTransactionRepository;
 import ru.panic.template.repository.UserRepository;
 import ru.panic.template.service.P2PTransactionService;
 
-import java.nio.charset.StandardCharsets;
-
 @Service
 @Slf4j
 public class P2PTransactionServiceImpl implements P2PTransactionService {

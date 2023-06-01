@@ -12,7 +12,15 @@
         <option value="$PROJECT_DIR$/transaction-management-service/pom.xml" />
         <option value="$PROJECT_DIR$/p2p-transaction-service/pom.xml" />
         <option value="$PROJECT_DIR$/replenishment-service/pom.xml" />
+        <option value="$PROJECT_DIR$/openapi-service/pom.xml" />
+        <option value="$PROJECT_DIR$/withdrawal-service/pom.xml" />
       </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/openapi-service/pom.xml" />
+        <option value="$PROJECT_DIR$/panic/pom.xml" />
+      </set>
     </option>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_17" default="true" project-jdk-name="corretto-17" project-jdk-type="JavaSDK">

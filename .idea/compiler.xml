@@ -10,6 +10,7 @@
         <module name="panic (2)" />
         <module name="auth-service" />
         <module name="panic (3)" />
+        <module name="panic (4)" />
       </profile>
       <profile name="Annotation profile for management-service" enabled="true">
         <sourceOutputDir name="../transaction-management-service/target/generated-sources/annotations" />
@@ -29,6 +30,7 @@
       <module name="panic (1)" options="-parameters" />
       <module name="panic (2)" options="-parameters" />
       <module name="panic (3)" options="-parameters" />
+      <module name="panic (4)" options="-parameters" />
     </option>
   </component>
 </project>
